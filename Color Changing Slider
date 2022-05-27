@@ -1,0 +1,75 @@
+# download the libraries that will be used to create the graphs
+
+import pandas as pd
+import plotly
+import plotly.graph_objects as go
+
+# extract the data from my excel sheet and put it into a usable dataframe that can be called in a conscice manner later on
+
+slide = pd.read_excel('/content/drive/My Drive/Senior Year/Spring 22/WRIT 159B/Slide Map Data.xlsx')
+
+#slide # remove the "#" from in front of "data" in order to print the dataframe and see what it looks like
+
+# choose a color palette! To change the color palette, remove the "#" from the palette you want to run and add a "#" to all palettes you do not want to run
+# only one palette can run at a time, so make sure all others are highlighted in green with a "#" in front
+
+# diverging
+#scl = [[0.0, '#542788'],[0.2, '#998ec3'],[0.4, '#d8daeb'], [0.6, '#fee0b6'],[0.8, '#f1a340'],[1.0, '#b35806']]
+
+# categorical
+#scl = [[0.0, '#a6cee3'],[0.1, '#1f78b4'],[0.2, '#b2df8a'], [0.3, '#33a02c'],[0.4, '#fb9a99'],[0.5, '#e31a1c'], [0.6, '#fdbf6f'], [0.7, '#ff7f00'],[0.8, '#cab2d6'],[0.9, '#6a3d9a'], [1.0, '#ffff99']]
+
+# sequential reds
+scl = [[0.0, '#fee5d9'],[0.2, '#fcbba1'],[0.4, '#fc9272'], [0.6, '#fb6a4a'],[0.8, '#de2d26'],[1.0, '#a50f15']]
+
+# set up the slider
+
+year = 2010 # define the first year of the data
+
+data_slider = [] # create an empty list that will be filled from the for loops below
+
+# create a for loop that iterates through the years 
+for year in slide['Year'].unique(): 
+    slide_year = slide[(slide['Year'] == year)] # define a list of the years 
+
+# create a nested for loop; what this does is iterate through the columns for each year
+# in other words, for every year (the first for loop), for every state (this for loop), what was the antibiotic prescription rate
+    for col in slide_year.columns:  
+        slide_year[col] = slide_year[col].astype(str) 
+
+    data_one_year = dict(
+                        type='choropleth', # this defines the type of map, the map we are creating is called a choropleth map
+                        locations = slide_year['State Code'], # the data frame needs a list of two letter state abbreviations in order to match the state data to the map
+                        z=slide_year['Prescription Rate'].astype(float), # this is the data that determines the colors on the map
+                        locationmode='USA-states', # this defines the boundaries of the map; in this case the state boundaries are the outlines
+                        colorscale = scl,) # link the colors on the map to the colors defined in the box above
+
+    data_slider.append(data_one_year) # add everything in the for loop (everything defined above) into the empty list that was created
+
+# define the properties of the slider
+
+# create an empty list that will be populated from the for loop below
+steps = []
+
+# create a for loop that iterates through the length of the list created in the cell above; this defines how many "steps" the slider will contain
+for i in range(len(data_slider)): 
+    step = dict(method='restyle',
+                args=['visible', [False] * len(data_slider)],
+                label='Year {}'.format(i + 2010)) # the slider labels will increase by one year starting at 2010, the year we defined in the box above
+    step['args'][1][i] = True
+
+    steps.append(step) # add the data from the for loop above to the empty list created above the for loop
+
+sliders = [dict(active=0, pad={"t": 1}, steps=steps)]  # define the slider
+
+# construct the graph
+
+# define the layout of the graph and add the slider to the plot
+layout = dict(geo=dict(scope='usa',
+                       projection={'type': 'albers usa'}),
+              sliders=sliders)
+
+fig = dict(data=data_slider, layout=layout) # define the figure as a dictionary where the data is equal to the data we added to the list in the first for loop and the layout is equal to what we defined above in this box
+
+# plot the figure
+plotly.offline.iplot(fig)
