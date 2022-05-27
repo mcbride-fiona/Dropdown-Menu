@@ -1,0 +1,63 @@
+# download the libraries that will be used to create the graphs
+
+import pandas as pd
+import plotly.graph_objects as go
+
+
+
+# transpose the data so the years are the row labels and the states are the column labels; this is important later so the for loops iterate properly 
+
+df = data.set_index('State').T
+
+# print the dataframe - this helps ensure that the structure of the data is what you expect
+
+df
+
+# add an interactive dropdown menu to a line plot
+
+# "def" creates a function that you can later call with different variables without having to redefine the function over and over with each new variable
+def multi_plot(df, title, addAll = True): 
+    fig = go.Figure()
+
+    for column in df.columns.to_list(): # create a for loop that iterates through all of the columns in the dataframe; this will build a graph where each state's data is plotted one at a time and allows you to pick out each state 
+        fig.add_trace(
+            go.Scatter(
+                x = df.index, # define the x axis as the years
+                y = df[column], # define the y axis as the data under each column
+                name = column)) # the column names (the states) make up the names that will go in the dropdown menu
+
+# create a dictionary containing the state names, pulled from the dataframe column names, and add it to the "button"
+    button_all = dict(label = 'All',
+                      method = 'update',
+                      args = [{'visible': df.columns.isin(df.columns),
+                               'title': 'All',
+                               'showlegend':True}])
+
+# create a new function that defines the format of the button and what it does
+    def create_layout_button(column):
+        return dict(label = column,
+                    method = 'update',
+                    args = [{'visible': df.columns.isin([column]),
+                             'title': column,
+                             'showlegend': True}])
+
+# now that the button has been created, add it to the graph by updating the layout
+    fig.update_layout(
+        updatemenus=[go.layout.Updatemenu(
+            active = 0,
+            buttons = ([button_all] * addAll) + list(df.columns.map(lambda column: create_layout_button(column))))])
+
+# update remaining layout properties
+    fig.update_layout(
+        title_text=title,
+        height=800)
+   
+    fig.show()
+    
+# plot the graph and add a title
+multi_plot(df, title="Antibiotic Prescription Rate Per 1000 People by State")
+
+# this is a simple plot that does not contain any interactive elements
+
+df.plot() # this plots the graph
+plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.) # this includes the key with all of the states and places it on the side of the graph, rather than overlapping
