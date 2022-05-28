@@ -1,0 +1,27 @@
+# download the libraries that will be used to create the graphs
+
+import pandas as pd
+import altair as alt
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+
+# this is a dataset that is built in to python, calling it with statsmodels.api automatically brings it up in a usable format
+cancer = sm.datasets.cancer.load_pandas().data
+cancer # view the dataset
+
+# display the data
+x = cancer['population'] # define the x-axis data as the population of the various regions for which data was recorded
+y = cancer['cancer'] # define the y-axis as the rate of cancer in the population for the regions for which data was recorded 
+
+plt.scatter(x, y) # create the scatterplot
+
+# create an interactive chart with a dynamic zoom function
+alt.Chart(cancer).mark_circle(size=50).encode( # the mark_circle function is what defines the chart as a scatterplot
+    alt.X("population"), #define the x-axis as named in the dataset; this also sets the x-axis title
+    alt.Y("cancer"), #define the y-axis as named in the dataset; this also sets the y-axis title
+).properties(
+    height=350, width=500
+).configure_axis(
+    titleFontSize=20,
+    labelFontSize=15
+).interactive() #this is the one line that makes the graph interactive; if you don't want the plot to be interactive you can remove this line and it will maintain all other graph attributes 
