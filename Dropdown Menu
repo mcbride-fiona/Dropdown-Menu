@@ -3,7 +3,8 @@
 import pandas as pd
 import plotly.graph_objects as go
 
-
+# add the data
+# the data file is available in this repository as 
 
 # transpose the data so the years are the row labels and the states are the column labels; this is important later so the for loops iterate properly 
 
