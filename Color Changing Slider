@@ -4,9 +4,8 @@ import pandas as pd
 import plotly
 import plotly.graph_objects as go
 
-# extract the data from my excel sheet and put it into a usable dataframe that can be called in a conscice manner later on
-
-slide = pd.read_excel('/content/drive/My Drive/Senior Year/Spring 22/WRIT 159B/Slide Map Data.xlsx')
+# add the data as a dataframe named "slide"
+# the data file used in this code is available in this repository as "Antibiotic Prescription Rate Data.xlsx"
 
 #slide # remove the "#" from in front of "data" in order to print the dataframe and see what it looks like
 
